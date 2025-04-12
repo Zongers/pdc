@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Package Date Calculator</title>
+<link rel="icon" href="https://i.ibb.co/RpCzFrqK/icon.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #98cc4e;
+            --secondary: #fb0088;
+            --light: #FFFFFF;
+            --dark: #292929;
+            --bg: #F7F7F7;
+            --border: #e0e0e0;
+            --pink: #ffd6e7;
+            --date-format-btn: #f5a40f;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+       .calculator-container {
+    background: var(--light);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    width: 100%;
+    max-width: 800px;
+    border: 1px solid rgba(0,0,0,0.05);
+   
+    min-height: 540px; 
+}
+
+        .toolbar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.7rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: var(--dark);
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-date-format {
+            background: var(--date-format-btn);
+            color: white;
+        }
+
+        .btn-date-format:hover {
+            background: #ed1588;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 1rem;
+            table-layout: fixed;
+            font-size: 0.85rem;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 0.75rem;
+            text-align: left;
+            word-wrap: break-word;
+        }
+
+        th {
+            background-color: rgba(152,204,78,0.1);
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            background-color: white;
+        }
+
+        .date-input {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .date-input label {
+            font-weight: 500;
+            color: var(--dark);
+            min-width: 120px;
+        }
+
+        .date-input input {
+            padding: 0.7rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .current-date {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .notification {
+            position: relative;
+            margin-top: 1rem;
+            padding: 0.8rem 1rem;
+            border-radius: 6px;
+            background: rgba(152, 204, 78, 0.1);
+            border: 1px solid rgba(152, 204, 78, 0.2);
+            font-size: 0.9rem;
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            height: auto;
+            padding: 0.8rem 1rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .toolbar, .date-input {
+                flex-direction: column;
+            }
+
+            .btn, .date-input input {
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-calendar-alt"></i> Package Date Calculator</h1>
+        <p>Calculate activation dates based on package durations</p>
+    </div>
+
+    <div class="calculator-container">
+        <div class="current-date" id="currentDate"></div>
+        
+        <div class="date-input">
+            <label for="expiryDate">Expiry Date:</label>
+            <input type="date" id="expiryDate">
+        </div>
+
+        <div class="toolbar">
+            <button class="btn btn-primary" id="processBtn">
+                <i class="fas fa-calculator"></i> Process
+            </button>
+            <button class="btn btn-secondary" id="clearBtn">
+                <i class="fas fa-trash-alt"></i> Clear
+            </button>
+            <button class="btn btn-secondary" id="refreshBtn">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <button class="btn btn-date-format" id="formatBtn">
+                <i class="fas fa-exchange-alt"></i> Change Date Format
+            </button>
+        </div>
+
+        <table id="resultsTable">
+            <thead>
+                <tr>
+                    <th style="width: 25%">Package Type</th>
+                    <th style="width: 35%">Activation Date</th>
+                    <th style="width: 35%">Expiry Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td colspan="3" style="text-align: center;">No data processed yet</td></tr>
+            </tbody>
+        </table>
+
+        <div class="notification" id="notification"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const expiryDate = document.getElementById('expiryDate');
+            const processBtn = document.getElementById('processBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const refreshBtn = document.getElementById('refreshBtn');
+            const formatBtn = document.getElementById('formatBtn');
+            const currentDateEl = document.getElementById('currentDate');
+            const resultsTable = document.getElementById('resultsTable').querySelector('tbody');
+            const notification = document.getElementById('notification');
+            
+            // State
+            let currentDateFormat = 'dd-mmm-yyyy'; // Default format
+            
+            // Package durations in days
+            const packages = [
+                { name: "Weekly", days: 6 },
+                { name: "Monthly", days: 29 },
+                { name: "3 Months", days: 89 },
+                { name: "6 Months", days: 179 },
+                { name: "12 Months", days: 364 }
+            ];
+            
+            // Set current date as default
+            function setCurrentDate() {
+                const today = new Date();
+                const formattedDate = formatDateForInput(today);
+                expiryDate.value = formattedDate;
+                currentDateEl.textContent = `Current Date: ${formatDisplayDate(today)}`;
+            }
+            
+            // Initialize
+            setCurrentDate();
+            
+            // Process button click
+            processBtn.addEventListener('click', function() {
+                const expiryDateValue = expiryDate.value;
+                
+                if (!expiryDateValue) {
+                    alert('Please select an expiry date');
+                    return;
+                }
+                
+                const expiryDateObj = new Date(expiryDateValue);
+                calculateAllPackages(expiryDateObj);
+            });
+            
+            // Clear button click
+            clearBtn.addEventListener('click', function() {
+                expiryDate.value = '';
+                resultsTable.innerHTML = '<tr><td colspan="3" style="text-align: center;">No data processed yet</td></tr>';
+                hideNotification();
+            });
+            
+            // Refresh button click
+            refreshBtn.addEventListener('click', function() {
+                setCurrentDate();
+                const today = new Date();
+                calculateAllPackages(today);
+            });
+            
+            // Format button click
+            formatBtn.addEventListener('click', function() {
+                currentDateFormat = currentDateFormat === 'dd-mmm-yyyy' ? 'dd-mm-yyyy' : 'dd-mmm-yyyy';
+                const expiryDateValue = expiryDate.value;
+                
+                if (expiryDateValue) {
+                    const expiryDateObj = new Date(expiryDateValue);
+                    calculateAllPackages(expiryDateObj);
+                } else {
+                    calculateAllPackages(new Date());
+                }
+                
+                showNotification(`Date format changed to ${currentDateFormat === 'dd-mm-yyyy' ? 'Day-Month-Year' : 'Day-MonthName-Year'}`);
+            });
+            
+            // Show notification
+            function showNotification(message) {
+                notification.textContent = message;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    hideNotification();
+                }, 4000);
+            }
+            
+            // Hide notification
+            function hideNotification() {
+                notification.classList.remove('show');
+            }
+            
+            // Calculate all packages
+            function calculateAllPackages(expiryDate) {
+                resultsTable.innerHTML = '';
+                
+                packages.forEach(pkg => {
+                    const activationDate = new Date(expiryDate);
+                    activationDate.setDate(activationDate.getDate() - pkg.days);
+                    
+                    const row = document.createElement('tr');
+                    
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = pkg.name;
+                    row.appendChild(nameCell);
+                    
+                    const activationCell = document.createElement('td');
+                    activationCell.textContent = formatDisplayDate(activationDate);
+                    row.appendChild(activationCell);
+                    
+                    const expiryCell = document.createElement('td');
+                    expiryCell.textContent = formatDisplayDate(expiryDate);
+                    row.appendChild(expiryCell);
+                    
+                    resultsTable.appendChild(row);
+                    
+                    // Show notification after 12 months package
+                    if (pkg.name === "12 Months") {
+                        showNotification(`Calculated! Expires on ${formatDisplayDate(expiryDate)}`);
+                    }
+                });
+            }
+            
+            // Format date for input (YYYY-MM-DD)
+            function formatDateForInput(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+            
+            // Format date for display
+            function formatDisplayDate(date) {
+                if (currentDateFormat === 'dd-mm-yyyy') {
+                    // Day-Month-Year format (01-01-2023)
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const year = date.getFullYear();
+                    return `${day}-${month}-${year}`;
+                } else {
+                    // Default: Day-MonthName-Year format (01-Jan-2023)
+                    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    const day = date.getDate();
+                    const month = months[date.getMonth()];
+                    const year = date.getFullYear();
+                    return `${day}-${month}-${year}`;
+                }
+            }
+            
+            // Calculate on page load
+            calculateAllPackages(new Date());
+        });
+    </script>
+</body>
+</html>
