@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Package Date Calculator</title>
+     <link rel="icon" href="https://i.ibb.co/W48rv8hd/icon.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-light: #a29bfe;
+            --primary-dark: #5649c0;
+            --primary-transparent: rgba(108, 92, 231, 0.1);
+            --primary-20: rgba(108, 92, 231, 0.2);
+            --success: #00b894;
+            --success-transparent: rgba(0, 184, 148, 0.1);
+            --success-text: #00b894;
+            --danger: #ff7675;
+            --danger-transparent: rgba(255, 118, 117, 0.1);
+            --danger-text: #ff7675;
+            --warning: #fdcb6e;
+            --text-primary: #2d3436;
+            --text-secondary: #636e72;
+            --bg-color: #f9f9f9;
+            --card-bg: #ffffff;
+            --border-color: #dfe6e9;
+            --unselected-bg: #f5f5f5;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --white: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            --primary: #7d6bff;
+            --primary-light: #5a4ac5;
+            --primary-dark: #9a86ff;
+            --primary-transparent: rgba(125, 107, 255, 0.1);
+            --primary-20: rgba(125, 107, 255, 0.2);
+            --success: #55efc4;
+            --success-transparent: rgba(85, 239, 196, 0.1);
+            --success-text: #55efc4;
+            --danger: #ff7675;
+            --danger-transparent: rgba(255, 118, 117, 0.1);
+            --danger-text: #ff7675;
+            --warning: #ffeaa7;
+            --text-primary: #f5f6fa;
+            --text-secondary: #dfe6e9;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --border-color: #2d3436;
+            --unselected-bg: #242424;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            transition: var(--transition);
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            padding: 30px;
+            position: relative;
+            transition: var(--transition);
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-weight: 400;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-primary);
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary-light);
+            color: white;
+            transform: rotate(30deg);
+        }
+
+        .date-input-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .date-input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .date-input label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .date-input input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .date-input input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+        }
+
+        .current-date {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+            margin-left: 15px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+
+        .btn.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn.primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+        }
+
+        .btn.secondary {
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn.secondary:hover {
+            background: rgba(108, 92, 231, 0.2);
+            transform: translateY(-2px);
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+            table-layout: fixed;
+            font-size: 0.9rem;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid var(--primary); /* Added outline border */
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: left;
+            word-wrap: break-word;
+        }
+
+        th {
+            background-color: var(--primary);
+            position: sticky;
+            top: 0;
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        td {
+            background-color: var(--unselected-bg); /* Default unselected background */
+        }
+
+        tr.selected-row td:first-child {
+            background-color: var(--primary-20); /* 20% transparent purple */
+            color: var(--primary); /* Solid purple text */
+            font-weight: 600;
+        }
+
+        tr.selected-row td:nth-child(2) {
+            background-color: var(--success-transparent);
+            color: var(--success-text);
+            font-weight: 500;
+        }
+
+        tr.selected-row td:nth-child(3) {
+            background-color: var(--danger-transparent);
+            color: var(--danger-text);
+            font-weight: 500;
+        }
+
+        .notification {
+            position: relative;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(108, 92, 231, 0.1);
+            border: 1px solid rgba(108, 92, 231, 0.2);
+            font-size: 0.9rem;
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .notification.show {
+            opacity: 1;
+            height: auto;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .hunting-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .hunting-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            margin-top: 15px;
+        }
+
+        .hunting-title {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hunting-result {
+            font-size: 1rem;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .date-input-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .date-input {
+                width: 100%;
+            }
+            
+            .toolbar {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.3rem;
+            }
+            
+            th, td {
+                padding: 8px;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Fix for date picker icon in dark mode */
+        [data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-calendar-alt"></i> Package Date Calculator</h1>
+            <p class="subtitle">Calculate package dates with precision</p>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </header>
+
+        <div class="current-date" id="currentDate"></div>
+        
+        <div class="date-input-container">
+            <div class="date-input">
+                <label id="dateLabel">Expiry Date:</label>
+                <input type="date" id="dateInput">
+            </div>
+            
+            <div class="toggle-label">
+                <span>Calculate:</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="calculationMode">
+                    <span class="slider"></span>
+                </label>
+                <span id="modeLabel">Expiry from Activation</span>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <button class="btn primary" id="processBtn">
+                <i class="fas fa-calculator"></i> Process
+            </button>
+            <button class="btn secondary" id="clearBtn">
+                <i class="fas fa-trash-alt"></i> Clear
+            </button>
+            <button class="btn secondary" id="refreshBtn">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <button class="btn secondary" id="formatBtn">
+                <i class="fas fa-exchange-alt"></i> Change Format
+            </button>
+        </div>
+
+        <table id="resultsTable">
+            <thead>
+                <tr>
+                    <th style="width: 25%">Package Type</th>
+                    <th style="width: 35%">Activation Date</th>
+                    <th style="width: 35%">Expiry Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td colspan="3" style="text-align: center;">No data processed yet</td></tr>
+            </tbody>
+        </table>
+
+        <div class="notification" id="notification"></div>
+        
+        <div class="hunting-section">
+            <div class="hunting-card">
+                <div class="hunting-result" id="huntingResults"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const dateInput = document.getElementById('dateInput');
+            const processBtn = document.getElementById('processBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const refreshBtn = document.getElementById('refreshBtn');
+            const formatBtn = document.getElementById('formatBtn');
+            const currentDateEl = document.getElementById('currentDate');
+            const resultsTable = document.getElementById('resultsTable').querySelector('tbody');
+            const notification = document.getElementById('notification');
+            const themeToggle = document.getElementById('themeToggle');
+            const calculationMode = document.getElementById('calculationMode');
+            const dateLabel = document.getElementById('dateLabel');
+            const modeLabel = document.getElementById('modeLabel');
+            const huntingResults = document.getElementById('huntingResults');
+            
+            // State
+            let currentDateFormat = 'dd-mmm-yyyy'; // Default format
+            let isDarkMode = localStorage.getItem('packageCalcTheme') === 'dark';
+            let calculateExpiryFromActivation = localStorage.getItem('calculationMode') === 'true';
+            let selectedRow = localStorage.getItem('selectedRow') || 'Monthly';
+            
+            // Package durations in days
+            const packages = [
+                { name: "Weekly", days: 6 },
+                { name: "Monthly", days: 29 },
+                { name: "3 Months", days: 89 },
+                { name: "6 Months", days: 179 },
+                { name: "12 Months", days: 359 }
+            ];
+            
+            // Initialize theme
+            function initTheme() {
+                if (isDarkMode) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                }
+            }
+            
+            // Initialize calculation mode
+            function initCalculationMode() {
+                calculationMode.checked = calculateExpiryFromActivation;
+                updateModeUI();
+            }
+            
+            // Update UI based on calculation mode
+            function updateModeUI() {
+                if (calculateExpiryFromActivation) {
+                    dateLabel.textContent = "Activation Date:";
+                    modeLabel.textContent = "Expiry from Activation";
+                } else {
+                    dateLabel.textContent = "Expiry Date:";
+                    modeLabel.textContent = "Activation from Expiry";
+                }
+            }
+            
+            // Set current date as default
+            function setCurrentDate() {
+                const today = new Date();
+                const formattedDate = formatDateForInput(today);
+                dateInput.value = formattedDate;
+                currentDateEl.textContent = `Current Date: ${formatDisplayDate(today)}`;
+                
+                // Calculate hunting dates
+                calculateHuntingDates();
+            }
+            
+            // Calculate hunting dates
+            function calculateHuntingDates() {
+                const today = new Date();
+                const huntingDate = new Date(today);
+                huntingDate.setDate(huntingDate.getDate() - 10); // 11th day (today is 1st day)
+                
+                huntingResults.innerHTML = `11th Day Hunting Date: <strong>${formatDisplayDate(huntingDate)}</strong>`;
+            }
+            
+            // Initialize
+            initTheme();
+            initCalculationMode();
+            setCurrentDate();
+            
+            // Theme toggle
+            themeToggle.addEventListener('click', function() {
+                isDarkMode = !isDarkMode;
+                localStorage.setItem('packageCalcTheme', isDarkMode ? 'dark' : 'light');
+                initTheme();
+            });
+            
+            // Calculation mode toggle
+            calculationMode.addEventListener('change', function() {
+                calculateExpiryFromActivation = this.checked;
+                localStorage.setItem('calculationMode', calculateExpiryFromActivation);
+                updateModeUI();
+                
+                // Recalculate if we have a date
+                if (dateInput.value) {
+                    const dateObj = new Date(dateInput.value);
+                    calculateAllPackages(dateObj);
+                }
+            });
+            
+            // Process button click
+            processBtn.addEventListener('click', function() {
+                const dateValue = dateInput.value;
+                
+                if (!dateValue) {
+                    showNotification('Please select a date', 'error');
+                    return;
+                }
+                
+                const dateObj = new Date(dateValue);
+                calculateAllPackages(dateObj);
+            });
+            
+            // Clear button click
+            clearBtn.addEventListener('click', function() {
+                dateInput.value = '';
+                resultsTable.innerHTML = '<tr><td colspan="3" style="text-align: center;">No data processed yet</td></tr>';
+                hideNotification();
+            });
+            
+            // Refresh button click
+            refreshBtn.addEventListener('click', function() {
+                setCurrentDate();
+                const today = new Date();
+                calculateAllPackages(today);
+            });
+            
+            // Format button click
+            formatBtn.addEventListener('click', function() {
+                currentDateFormat = currentDateFormat === 'dd-mmm-yyyy' ? 'dd-mm-yyyy' : 'dd-mmm-yyyy';
+                const dateValue = dateInput.value;
+                
+                if (dateValue) {
+                    const dateObj = new Date(dateValue);
+                    calculateAllPackages(dateObj);
+                } else {
+                    calculateAllPackages(new Date());
+                }
+                
+                showNotification(`Date format changed to ${currentDateFormat === 'dd-mm-yyyy' ? 'Day-Month-Year' : 'Day-MonthName-Year'}`);
+            });
+            
+            // Show notification
+            function showNotification(message, type = 'info') {
+                notification.textContent = message;
+                notification.className = `notification ${type} show`;
+                
+                setTimeout(() => {
+                    hideNotification();
+                }, 4000);
+            }
+            
+            // Hide notification
+            function hideNotification() {
+                notification.className = 'notification';
+            }
+            
+            // Calculate all packages
+            function calculateAllPackages(dateObj) {
+                resultsTable.innerHTML = '';
+                
+                packages.forEach(pkg => {
+                    let activationDate, expiryDate;
+                    
+                    if (calculateExpiryFromActivation) {
+                        // Calculate expiry from activation
+                        activationDate = new Date(dateObj);
+                        expiryDate = new Date(activationDate);
+                        expiryDate.setDate(expiryDate.getDate() + pkg.days);
+                    } else {
+                        // Calculate activation from expiry
+                        expiryDate = new Date(dateObj);
+                        activationDate = new Date(expiryDate);
+                        activationDate.setDate(activationDate.getDate() - pkg.days);
+                    }
+                    
+                    const row = document.createElement('tr');
+                    if (pkg.name === selectedRow) {
+                        row.className = "selected-row";
+                    }
+                    
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = pkg.name;
+                    row.appendChild(nameCell);
+                    
+                    const activationCell = document.createElement('td');
+                    activationCell.textContent = formatDisplayDate(activationDate);
+                    row.appendChild(activationCell);
+                    
+                    const expiryCell = document.createElement('td');
+                    expiryCell.textContent = formatDisplayDate(expiryDate);
+                    row.appendChild(expiryCell);
+                    
+                    // Add click event to select row
+                    row.addEventListener('click', function() {
+                        // Remove selected class from all rows
+                        document.querySelectorAll('#resultsTable tr').forEach(r => {
+                            r.className = '';
+                        });
+                        
+                        // Add selected class to clicked row
+                        this.className = 'selected-row';
+                        selectedRow = pkg.name;
+                        localStorage.setItem('selectedRow', selectedRow);
+                    });
+                    
+                    resultsTable.appendChild(row);
+                    
+                    // Show notification after 12 months package
+                    if (pkg.name === "12 Months") {
+                        const action = calculateExpiryFromActivation ? "expires" : "activated";
+                        showNotification(`Calculated! Package ${action} on ${formatDisplayDate(expiryDate)}`);
+                    }
+                });
+                
+                // Calculate hunting dates whenever packages are calculated
+                calculateHuntingDates();
+            }
+            
+            // Format date for input (YYYY-MM-DD)
+            function formatDateForInput(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+            
+            // Format date for display
+            function formatDisplayDate(date) {
+                if (currentDateFormat === 'dd-mm-yyyy') {
+                    // Day-Month-Year format (01-01-2023)
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const year = date.getFullYear();
+                    return `${day}-${month}-${year}`;
+                } else {
+                    // Default: Day-MonthName-Year format (01-Jan-2023)
+                    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    const day = date.getDate();
+                    const month = months[date.getMonth()];
+                    const year = date.getFullYear();
+                    return `${day}-${month}-${year}`;
+                }
+            }
+            
+            // Calculate on page load
+            calculateAllPackages(new Date());
+        });
+    </script>
+</body>
+</html>
